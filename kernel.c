@@ -1,11 +1,13 @@
+#include "vga.h"
 
 void printf(char* str)
 {
     unsigned short* vga_buffer = (unsigned short *) 0xb8000;
 
+    uint8_t color = vga_entry_color(VGA_COLOR_LIGHT_BLUE, VGA_COLOR_BLACK);
     for (int i = 0; str[i] != '\0'; ++i)
     {
-        vga_buffer[i] = (vga_buffer[i] & 0xFF00) | str[i];
+        vga_buffer[i] = vga_entry(str[i], color);
     }
 }
 
