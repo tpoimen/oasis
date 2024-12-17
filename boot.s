@@ -21,10 +21,10 @@ stack_top:
 .global _start
 .type _start, @function
 _start:
-	/*
-	Set up top of stack since it grows downwards
-	*/
-	mov $stack_top, %esp
+    /*
+    Set up top of stack since it grows downwards
+    */
+    mov $stack_top, %esp
     
     /*
     Multiboot information and magic number sent to kernel_main
@@ -32,12 +32,12 @@ _start:
     push %eax
     push %ebx
 
-	call kernel_main
+    call kernel_main
     
     /*
     Infinite loop in case of accidental exit from kernel_main
     */
-	cli
+    cli
 1:	hlt
 	jmp 1b
 
