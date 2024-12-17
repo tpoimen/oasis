@@ -1,4 +1,5 @@
 #include "vga.h"
+#include "gdt.h"
 
 void printf(char* str)
 {
@@ -14,6 +15,8 @@ void printf(char* str)
 void kernel_main(void* multiboot_structure, unsigned int magic_number)
 {
     printf("Hello from Oasis kernel!");
+
+    gdt_init();
 
     while(1);
 }

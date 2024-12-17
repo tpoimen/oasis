@@ -2,7 +2,7 @@ GCCPARAMS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 ASPARAMS = 
 LDPARAMS = -ffreestanding -O2 -nostdlib
 
-objects = boot.o kernel.o
+objects = boot.o gdt.o kernel.o
 
 BIN_DIR = iso/boot/
 
