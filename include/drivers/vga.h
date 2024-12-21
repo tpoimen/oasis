@@ -1,5 +1,5 @@
-#ifndef _VGA_H_
-#define _VGA_H_
+#ifndef _OASIS_DRIVERS_VGA_H_
+#define _OASIS_DRIVERS_VGA_H_
 
 #include <stdint.h>
 
@@ -48,5 +48,5 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color)
     return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-#endif  // _VGA_H_
+#endif // _OASIS_DRIVERS_VGA_H_
 

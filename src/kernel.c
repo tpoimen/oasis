@@ -1,5 +1,5 @@
-#include "vga.h"
-#include "gdt.h"
+#include <drivers/vga.h>
+#include <gdt.h>
 
 void printf(char* str)
 {

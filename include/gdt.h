@@ -1,5 +1,5 @@
-#ifndef _GDT_H_
-#define _GDT_H_
+#ifndef _OASIS_GDT_H_
+#define _OASIS_GDT_H_
 
 #include <stdint.h>
 
@@ -36,5 +36,5 @@ void gdt_delete(void);
 uint16_t gdt_code_segment_selector(void);
 uint16_t gdt_data_segment_selector(void);
 
-#endif  // _GDT_H_
+#endif // _OASIS_GDT_H_
 

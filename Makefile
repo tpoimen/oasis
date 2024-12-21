@@ -1,8 +1,10 @@
-GCCPARAMS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+GCCPARAMS = -std=gnu99 -Iinclude -ffreestanding -O2 -Wall -Wextra
 ASPARAMS = 
 LDPARAMS = -ffreestanding -O2 -nostdlib
 
-objects = boot.o gdt.o kernel.o
+objects = obj/boot.o \
+		  obj/gdt.o \
+		  obj/kernel.o
 
 BIN_DIR = iso/boot/
 
@@ -16,14 +18,14 @@ install: oasis.bin
 
 .PHONY : clean
 clean:
-	rm $(objects)
-	rm $(BIN_DIR)oasis.bin
-	rm oasis.iso
+	rm -rf obj $(BIN_DIR)oasis.bin oasis.iso
 
-%.o: %.c
-	i686-elf-gcc $(GCCPARAMS) -o $@ -c $<
+obj/%.o: src/%.c
+	mkdir -p $(@D)
+	i686-elf-gcc $(GCCPARAMS) -c -o $@ $<
 
-%.o: %.s
+obj/%.o: src/%.s
+	mkdir -p $(@D)
 	i686-elf-as $(ASPARAMS) -o $@ $<
 
 oasis.bin: linker.ld $(objects)
