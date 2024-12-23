@@ -1,5 +1,6 @@
 #include <drivers/vga.h>
 #include <gdt.h>
+#include <hardwarecommunication/port.h>
 
 void printf(char* str)
 {
@@ -14,9 +15,12 @@ void printf(char* str)
 
 void kernel_main(void* multiboot_structure, unsigned int magic_number)
 {
-    printf("Hello from Oasis kernel!");
+    printf("Hello from Oasis kernel!");    
 
     gdt_init();
+
+    port example = port_init(PORT_8BIT, 0);
+    port_write(&example, 0);
 
     while(1);
 }

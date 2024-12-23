@@ -3,8 +3,9 @@ ASPARAMS =
 LDPARAMS = -ffreestanding -O2 -nostdlib
 
 objects = obj/boot.o \
-		  obj/gdt.o \
-		  obj/kernel.o
+	obj/gdt.o \
+	obj/hardwarecommunication/port.o \
+	obj/kernel.o
 
 BIN_DIR = iso/boot/
 
