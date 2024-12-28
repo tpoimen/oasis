@@ -1,13 +1,16 @@
-GCCPARAMS = -std=gnu99 -Iinclude -ffreestanding -O2 -Wall -Wextra
+GCCPARAMS = -std=gnu99 -Iinclude -ffreestanding -Wall -Wextra
 ASPARAMS = 
 LDPARAMS = -ffreestanding -O2 -nostdlib
 
-objects = obj/boot.o \
-	obj/gdt.o \
-	obj/hardwarecommunication/port.o \
-	obj/kernel.o
-
 BIN_DIR = iso/boot/
+
+src := $(shell find src/ -type f)
+# $(info SRC FILES = $(src))
+
+objects := $(addsuffix .o, $(basename $(src:src/%=obj/%)))
+# $(info OBJECT FILES = $(objects))
+
+all : run
 
 .PHONY : run
 run: oasis.iso

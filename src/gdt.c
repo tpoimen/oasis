@@ -1,20 +1,19 @@
 #include <gdt.h>
 
 // global gdt
-struct global_descriptor_table* gdt;
+struct global_descriptor_table gdt;
 
 void gdt_init(void)
 {
-    segment_descriptor_init(&gdt->null_segment_selector, 0, 0, 0);
-    segment_descriptor_init(&gdt->unused_segment_selector, 0, 0, 0);
-    segment_descriptor_init(&gdt->code_segment_selector, 0, 64*1024*1024, 0x9A);
-    segment_descriptor_init(&gdt->data_segment_selector, 0, 64*1024*1024, 0x92);
+    segment_descriptor_init(&gdt.null_segment_selector, 0, 0, 0);
+    segment_descriptor_init(&gdt.unused_segment_selector, 0, 0, 0);
+    segment_descriptor_init(&gdt.code_segment_selector, 0, 64*1024*1024, 0x9A);
+    segment_descriptor_init(&gdt.data_segment_selector, 0, 64*1024*1024, 0x92);
     
     uint32_t i[2];
-    i[0] = (uint32_t)gdt;
-    i[1] = sizeof(struct global_descriptor_table) << 16;
-    
-    asm volatile("lgdt (%0)" : : "r" (((uint8_t*)i) + 2));
+    i[0] = sizeof(struct global_descriptor_table) << 16; 
+    i[1] = (uint32_t)&gdt;
+    __asm__ volatile("lgdt (%0)" : : "p" (((uint8_t*)i) + 2));
 }
 
 void gdt_delete(void)
@@ -24,12 +23,12 @@ void gdt_delete(void)
 
 uint16_t gdt_data_segment_selector(void)
 {
-    return ((uint8_t*)&gdt->data_segment_selector) - ((uint8_t*)gdt);
+    return ((uint8_t*)&gdt.data_segment_selector) - ((uint8_t*)&gdt);
 }
 
 uint16_t gdt_code_segment_selector(void)
 {
-    return ((uint8_t*)&gdt->code_segment_selector) - ((uint8_t*)gdt);
+    return ((uint8_t*)&gdt.code_segment_selector) - ((uint8_t*)&gdt);
 }
 
 void segment_descriptor_init(struct segment_descriptor* segment, uint32_t base, uint32_t limit, uint8_t flags)
