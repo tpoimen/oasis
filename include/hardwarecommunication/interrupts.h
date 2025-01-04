@@ -27,6 +27,7 @@ struct interrupt_manager
 {
     struct gate_descriptor idt[NUM_GATE_DESCRIPTOR_ENTRIES];
     struct interrupt_descriptor_table_pointer idt_ptr;
+    uint32_t (*handlers[NUM_GATE_DESCRIPTOR_ENTRIES])(uint32_t);
     port pic_primary_command;
     port pic_primary_data;
     port pic_secondary_command;
@@ -45,6 +46,9 @@ void interrupt_manager_init(void);
 
 void activate_interrupts(void);
 void deactivate_interrupts(void);
+
+void interrupt_manager_set_handler(uint8_t interrupt_number, uint32_t (*handler)(uint32_t));
+void interrupt_manager_remove_handler(uint8_t interrupt_number);
 
 uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t esp);
 

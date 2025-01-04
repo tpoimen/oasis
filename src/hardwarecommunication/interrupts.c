@@ -1,5 +1,7 @@
 #include <hardwarecommunication/interrupts.h>
 
+#include <stddef.h>
+
 void printf(char* str);
 
 // global interrupt manager
@@ -22,7 +24,7 @@ void set_interrupt_descriptor_table_entry(
     interrupt->reserved = 0;
 }
 
-void interrupt_manager_init()
+void interrupt_manager_init(void)
 {
     interrupt_manager.pic_primary_command = port_init(PORT_8BIT_SLOW, 0x20);
     interrupt_manager.pic_primary_data = port_init(PORT_8BIT_SLOW, 0x21);
@@ -34,6 +36,7 @@ void interrupt_manager_init()
     
     // define all interrupts to an empty handler. will assign handlers as we go.
     for (uint16_t i = 0; i < NUM_GATE_DESCRIPTOR_ENTRIES; ++i)
+    {
         set_interrupt_descriptor_table_entry(
             i,
             code_segment,
@@ -41,6 +44,8 @@ void interrupt_manager_init()
             0,                     // kernel space
             IDT_INTERRUPT_GATE
         );
+        interrupt_manager.handlers[i] = NULL;
+    }
 
     set_interrupt_descriptor_table_entry(0x20, code_segment, &handle_interrupt_request_0x00, 0, IDT_INTERRUPT_GATE);
     set_interrupt_descriptor_table_entry(0x21, code_segment, &handle_interrupt_request_0x01, 0, IDT_INTERRUPT_GATE);
@@ -66,20 +71,40 @@ void interrupt_manager_init()
     __asm__ volatile("lidt %0" : : "m" (interrupt_manager.idt_ptr));
 }
 
-void activate_interrupts()
+void activate_interrupts(void)
 {
     __asm__ volatile("sti");
 }
 
-void deactivate_interrupts()
+void deactivate_interrupts(void)
 {
     __asm__ volatile("cli");
 }
 
+void interrupt_manager_set_handler(uint8_t interrupt_number, uint32_t (*handler)(uint32_t))
+{
+    interrupt_manager.handlers[interrupt_number] = handler;
+}
+
+void interrupt_manager_remove_handler(uint8_t interrupt_number)
+{
+    interrupt_manager.handlers[interrupt_number] = NULL;
+}
+
 uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t esp)
 {
-    printf("INTERRUPT!");
-    
+    if (interrupt_manager.handlers[interrupt_number] != NULL) {
+        esp = interrupt_manager.handlers[interrupt_number](esp);
+    }
+    else if (interrupt_number != 0x20) // don't want to print timer interrupts for now.
+    {
+        char* foo = "UNHANDLED INTERRUPT 0x00";
+        char* hex = "0123456789ABCDEF";
+        foo[22] = hex[(interrupt_number >> 4) & 0x0F];
+        foo[23] = hex[interrupt_number & 0x0F];
+        printf(foo);
+    }
+
     // if hardware interrupts, tell PICs so they know we are done handling the request
     if (0x20 <= interrupt_number && interrupt_number < 0x30) {
         port_write(&interrupt_manager.pic_primary_command, 0x20);
